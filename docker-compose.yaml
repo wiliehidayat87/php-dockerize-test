@@ -1,5 +1,23 @@
 version: "3.9"
+
+networks:
+  example:
+    driver: overlay
+    
 services:
+   php:
+     image: wiliehidayat87/php-dockerize-test-code:latest
+     expose:
+      - 9000
+     restart: always
+     extra_hosts:
+      - "host.docker.internal:host-gateway"
+     networks:
+      - example
+     deploy:
+      replicas: 1
+      mode: replicated
+
    nginx:
      restart: always
      image: nginx
@@ -10,17 +28,6 @@ services:
       - "host.docker.internal:host-gateway"
      ports:
       - 80:80
-     networks:
-      - example
-     deploy:
-      replicas: 1
-      mode: replicated
-
-   php:
-     image: wiliehiydat87/php-dockerize-test-code:latest
-     restart: always
-     extra_hosts:
-      - "host.docker.internal:host-gateway"
      networks:
       - example
      deploy:
@@ -38,10 +45,11 @@ services:
 configs:
   nginx_config:
     file: ./nginx/default.conf
-networks:
-  example:
-    driver: overlay
-    driver_opts:
-      encrypted: "true"
+
+#networks:
+  #example:
+    #driver: overlay
+    #driver_opts:
+      #encrypted: "true"
 volumes:
     mysql-data:

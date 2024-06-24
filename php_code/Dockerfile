@@ -1,8 +1,8 @@
 FROM php:8.3.8-fpm-alpine as php
 RUN apk --no-cache add tzdata
 RUN apk --update add ca-certificates
-RUN docker-php-ext-install mysqli pdo pdo_mysql
-RUN docker-php-ext-enable mysqli
+RUN docker-php-ext-install mysqli pdo pdo_mysql php php-fpm php-cli 
+RUN docker-php-ext-enable mysqli pdo pdo_mysql php php-fpm php-cli
 
 LABEL author="Wilie wahyu hidayat"
 
