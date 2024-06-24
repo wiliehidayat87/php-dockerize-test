@@ -23,4 +23,20 @@ COPY --from=php /etc/passwd /etc/passwd
 COPY --from=php /etc/group /etc/group
 COPY --from=php /bin/sh /bin/sh
 
+RUN chown -R www-data:www-data /Users
+RUN chown -R www-data:www-data /Users/wiliewahyuhidayat
+RUN chown -R www-data:www-data /Users/wiliewahyuhidayat/Documents
+RUN chown -R www-data:www-data /Users/wiliewahyuhidayat/Documents/PHP
+RUN chown -R www-data:www-data /Users/wiliewahyuhidayat/Documents/PHP/docker-php-test
+RUN chmod -R 775 /Users
+RUN chmod -R 775 /Users/wiliewahyuhidayat
+RUN chmod -R 775 /Users/wiliewahyuhidayat/Documents
+RUN chmod -R 775 /Users/wiliewahyuhidayat/Documents/PHP
+RUN chmod -R 775 /Users/wiliewahyuhidayat/Documents/PHP/docker-php-test
+
+# Change current user to www
+USER www-data
+
+# Expose port 9000 and start php-fpm server
+EXPOSE 9000
 CMD ["php-fpm"]
