@@ -1,0 +1,45 @@
+version: "3.9"
+services:
+   nginx:
+     restart: always
+     image: nginx
+     configs:
+      - source: nginx_config
+        target: /etc/nginx/conf.d/default.conf
+     ports:
+      - 80:80
+     networks:
+      - example
+     deploy:
+      replicas: 1
+      mode: replicated
+
+   php:
+     restart: always
+     expose:
+       - 9000
+     image: wiliehiydat87/php-dockerize-test-code:latest
+     networks:
+      - example
+     deploy:
+      replicas: 3
+      mode: replicated
+
+   db:    
+      image: mariadb  
+      volumes: 
+        -    mysql-data:/var/lib/mysql
+      environment:  
+       MYSQL_ROOT_PASSWORD: mariadb
+       MYSQL_DATABASE: ecomdb 
+
+configs:
+  nginx_config:
+    file: ./nginx/app.conf
+networks:
+  example:
+    driver: overlay
+    driver_opts:
+      encrypted: "true"
+volumes:
+    mysql-data:
