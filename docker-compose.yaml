@@ -1,8 +1,4 @@
 version: "3.9"
-
-networks:
-  example:
-    driver: overlay
     
 services:
    php:
@@ -45,11 +41,10 @@ services:
 configs:
   nginx_config:
     file: ./nginx/default.conf
-
-#networks:
-  #example:
-    #driver: overlay
-    #driver_opts:
-      #encrypted: "true"
+networks:
+  example:
+    driver: overlay
+    driver_opts:
+      encrypted: "true"
 volumes:
     mysql-data:
