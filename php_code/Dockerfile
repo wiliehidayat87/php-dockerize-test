@@ -1,7 +1,8 @@
-FROM centos:6
-RUN yum -y update && yum clean all
-RUN yum -y install php-fpm php-mbstring php-mysql php-gd && yum clean all
-RUN sed -e 's/127.0.0.1:9000/9000/' -e '/allowed_clients/d' -e '/catch_workers_output/s/^;//' -e '/error_log/d' -i /etc/php-fpm.d/www.conf
+FROM php:8.3.8-fpm-alpine as php
+RUN apk --no-cache add tzdata
+RUN apk --update add ca-certificates
+RUN docker-php-ext-install mysqli pdo pdo_mysql php-fpm
+RUN docker-php-ext-enable mysqli 
 
 LABEL author="Wilie wahyu hidayat"
 
@@ -11,5 +12,26 @@ RUN mkdir -p /Users/wiliewahyuhidayat/Documents
 RUN mkdir -p /Users/wiliewahyuhidayat/Documents/PHP
 RUN mkdir -p /Users/wiliewahyuhidayat/Documents/PHP/docker-php-test
 
+WORKDIR /Users/wiliewahyuhidayat/Documents/PHP/docker-php-test
+COPY . .
+
+FROM scratch
+
+COPY --from=php /usr/share/zoneinfo /usr/share/zoneinfo
+COPY --from=php /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=php /etc/passwd /etc/passwd
+COPY --from=php /etc/group /etc/group
+COPY --from=php /bin/sh /bin/sh
+
+# Expose port 9000 and start php-fpm server
 EXPOSE 9000
+CMD [ "php", "./index.php" ]
+
+
+FROM centos:6
+RUN yum -y update && yum clean all
+RUN yum -y install php-fpm php-mbstring php-mysql php-gd && yum clean all
+RUN sed -e 's/127.0.0.1:9000/9000/' -e '/allowed_clients/d' -e '/catch_workers_output/s/^;//' -e '/error_log/d' -i /etc/php-fpm.d/www.conf
+RUN mkdir -p /var/www/html
+EXPOSE 9003
 ENTRYPOINT /usr/sbin/php-fpm --nodaemonize
